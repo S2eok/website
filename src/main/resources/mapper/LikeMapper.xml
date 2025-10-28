@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LikeMapper">
+
+	<!-- 좋아요 추가 -->
+	<insert id = "insertLike" parameterType="com.seok.dto.Like">
+		 INSERT INTO likes (
+		 				   target_type
+		 				 , target_id,
+		 				 , user_num)
+		 		VALUES ( 
+		 		       #{targetType}
+		 		     , #{targetId}
+		 		     , #{userNum})
+	</insert>
+	
+	<!-- 좋아요 취소 -->
+	<delete id = "delectLike" parameterMap="com.seok.dto.Like">
+		  DELETE FROM likes
+		  WHERE target_type = #{targetType}
+		    AND target_id   = #{targetId}
+		    AND user_num    = #{userNum}
+	</delete>
+	
+	<!-- 좋아요 여부 확인 -->
+	<select id="checkUserLike" parameterType="com.seok.dto.Like" resultType="int">
+        SELECT COUNT(*)
+          FROM likes
+    	 WHERE target_type = #{targetType}
+      	   AND target_id   = #{targetId}
+      	   AND user_id     = #{userId}
+	</select>
+	
+	<!-- 게시판 좋아요 반영 -->
+	<update id="updateBoardLikeCount" parameterType="int">
+		UPDATE boards
+		   SET like_count = (
+		                    SELECT COUNT(*)
+		  				      FROM likes
+							 WHERE target_type = 'BOARD'
+		  					   AND target_id   = #{boardId})
+		 WHERE board_id = #{boardId};
+	</update>
+	
+	<!-- 댓글 좋아요 반영 -->
+	<update id="updateCommentLikeCount" parameterType="int">
+		UPDATE comments
+		   SET like_count = (SELECT COUNT(*)
+		  					   FROM likes
+							  WHERE target_type = 'COMMENT'
+		  					    AND target_id   = #{commentId})
+		 WHERE comment_id = #{commentId};
+	</update>
+</mapper>

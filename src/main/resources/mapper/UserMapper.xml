@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMapper">
+
+	<!-- 로그인 -->
+	<select id="login" parameterType="com.seok.dto.User"
+		resultType="com.seok.dto.User">
+		SELECT *
+		  FROM users
+		 WHERE user_id   = #{userId}
+		   AND password  = #{password}
+		   AND status    = 'ACTIVE'
+	</select>
+
+	<!-- 회원가입 -->
+	<insert id="signup" parameterType="com.seok.dto.User">
+		INSERT INTO users (user_id,
+		password, name, email, profile_img)
+		VALUES (#{userId}, #{password},
+		#{name}, #{email}, #{profileImg})
+	</insert>
+
+	<!-- 정보 수정 -->
+	<update id="updateUser" parameterType="com.seok.dto.User">
+		UPDATE users
+		   SET password    = #{password},
+		       email       = #{email},
+		       profile_img = #{profileImg}
+		 WHERE user_id     = #{userId}
+		   AND status      = 'ACTIVE'
+	</update>
+	
+	<!-- 회원 단일 조회 -->
+	<select id="selectUserProfile" parameterType="int" resultType="com.seok.dto.User">
+	SELECT user_num,
+	user_id,
+           name,
+           email,
+           profile_img,
+           role,
+           status,
+           created_at
+           last_login_at
+	  FROM users
+	 WHERE user_num = #{userNum}	
+	</select>
+
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword" parameterType="com.seok.dto.User">
+		UPDATE users
+		SET	password  = #{password}
+		WHERE user_id = #{userId}
+		AND status    = 'ACTIVE'
+	</update>
+	
+	<!-- 마지막 로그인 -->
+	<update id="updateLastLogin" parameterType="com.seok.dto.User">
+   		UPDATE users
+    	   SET user_id       = user_id
+    	 WHERE user_id       = #{userId}
+	</update>
+	
+	<!-- 전체 회원 조회 -->
+	<select id="selectAllUsers" parameterType="com.seok.dto.User">
+    SELECT 
+        user_num,
+        user_id,
+        name,
+        email,
+        role,
+        status,
+        created_at,
+        last_login_at
+    FROM users
+    ORDER BY created_at DESC
+	</select>
+	
+	<!-- 상태 변경 -->
+	<update id="updateStatus" parameterType="com.seok.dto.User">
+         UPDATE users
+            SET status  = #{status}
+          WHERE user_id = #{userId}
+	</update>
+
+</mapper>

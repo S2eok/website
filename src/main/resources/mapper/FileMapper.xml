@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FileMapper">
+
+	<!-- 파일 등록 -->
+	<insert id="insertFile" parameterType="com.seok.dto.File">
+        INSERT INTO files (
+                    board_id
+                  , original_name
+                  , saved_name
+                  , file_type
+                  , extension
+                  , file_path
+                  , size)
+           VALUES (
+       			    #{boardId}
+                  , #{originalName}
+                  , #{savedName}
+                  , #{fileType}
+                  , #{extension}
+                  , #{filePath}
+                  , #{size});
+	</insert>
+	
+	<!-- 파일 삭제 -->
+	<update id="deleteFile" parameterType="int">
+		DELETE FROM files
+         WHERE file_id = #{fileId}
+	</update>
+	
+	<!-- 파일 목록 조회 -->
+<select id="selectFilesByBoardId" parameterType="int" resultType="com.seok.dto.File">
+    SELECT
+        file_id,
+        board_id,
+        original_name,
+        saved_name,
+        file_type,
+        extension,
+        file_path,
+        size,
+        download_count,
+        created_at
+    FROM files
+    WHERE board_id = #{boardId}
+    ORDER BY created_at ASC;
+</select>
+	
+	<!-- 다운로드 증가 -->
+	<update id="increaseDownloadCount" parameterType="int">
+    	UPDATE files
+   		   SET download_count = download_count + 1
+	     WHERE file_id = #{fileId};
+	</update>
+	
+	<!-- 파일 상세 조회 -->
+<select id="selectFileById" parameterType="int" resultType="com.seok.dto.File">
+    SELECT
+        file_id,
+        board_id,
+        original_name,
+        saved_name,
+        file_type,
+        extension,
+        file_path,
+        size,
+        download_count,
+        created_at
+    FROM files
+    WHERE file_id = #{fileId};
+</select>
+
+</mapper>
