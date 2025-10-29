@@ -10,7 +10,7 @@
 <%@ include file="/WEB-INF/views/include/header.jsp" %>
 
 <a href="${pageContext.request.contextPath}/board?act=list">게시판 보기</a>
-
+<a href="${pageContext.request.contextPath}/board?act=write">게시글 작성</a>
 
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

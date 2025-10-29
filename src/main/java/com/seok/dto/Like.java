@@ -3,20 +3,20 @@ package com.seok.dto;
 import java.time.LocalDateTime;
 
 public class Like {
-	private int           likeId;     // PK
-	private String        targetType; // BOARD or COMMENT
+	private int           likeId;      // PK
+	private String        targetType;  // BOARD or COMMENT
 	private int           targetId;
-	private int           user_num;   // FK → users.user_num
-	private LocalDateTime created_at;
+	private int           userNum;     // FK → users.user_num
+	private LocalDateTime createdAt;
 
 	public Like() {}
 
-	public Like(int likeId, String targetType, int targetId, int user_num, LocalDateTime created_at) {
+	public Like(int likeId, String targetType, int targetId, int userNum, LocalDateTime createdAt) {
 		this.likeId     = likeId;
 		this.targetType = targetType;
 		this.targetId   = targetId;
-		this.user_num   = user_num;
-		this.created_at = created_at;
+		this.userNum    = userNum;
+		this.createdAt  = createdAt;
 	}
 
 	public int getLikeId() {
@@ -43,25 +43,25 @@ public class Like {
 		this.targetId = targetId;
 	}
 
-	public int getUser_num() {
-		return user_num;
+	public int getUserNum() {
+		return userNum;
 	}
 
-	public void setUser_num(int user_num) {
-		this.user_num = user_num;
+	public void setUserNum(int userNum) {
+		this.userNum = userNum;
 	}
 
-	public LocalDateTime getCreated_at() {
-		return created_at;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated_at(LocalDateTime created_at) {
-		this.created_at = created_at;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	@Override
 	public String toString() {
-		return "Like [likeId=" + likeId + ", targetType=" + targetType + ", targetId=" + targetId + ", user_num="
-				+ user_num + ", created_at=" + created_at + "]";
+		return "Like [likeId=" + likeId + ", targetType=" + targetType + ", targetId=" + targetId + ", userNum="
+				+ userNum + ", createdAt=" + createdAt + "]";
 	}
 }

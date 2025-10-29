@@ -1,7 +1,8 @@
 package com.seok.service;
 
 import java.util.List;
-import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
@@ -9,15 +10,33 @@ import java.util.Map;
 
 import com.seok.dto.User;
 import com.seok.mapper.UserMapper;
+import com.seok.util.MyBatisUtil;
 
 //@Service  // 스프링이 자동으로 Bean 등록
 public class UserServiceImpl implements UserService {
 
+	private static UserService instance = new UserServiceImpl();
+
+	private UserServiceImpl() {} // 외부에서 new 못하게 막기
+
+	public static UserService getInstance() {
+		return instance;
+	}
+
+	// private UserMapper userMapper; // 얘가 왜 NULL이지 데구리 긁적긁적
+	//Cannot invoke "com.seok.mapper.UserMapper.login(String, String)" because "this.userMapper" is null 뜸
+
 	@Override
 	public User login(String userId, String password) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
+            UserMapper mapper = session.getMapper(UserMapper.class); // 여기서 mapper 객체 꺼내기
+            return mapper.login(userId, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("로그인 오류난 듯");
+            return null;
+        }
+    }
 
 	@Override
 	public int signup(User user) {
@@ -50,7 +69,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> selectAllUsers() {
+	public List<User> selectAllUsers(User user) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -60,52 +79,4 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-//
-//    @Autowired
-//    private UserMapper userMapper;
-//
-//    @Override
-//    public User login(Map<String, Object> map) {
-//        return userMapper.login(map);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public int signup(User user) {
-//        return userMapper.signup(user);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public int updateUser(User user) {
-//        return userMapper.updateUser(user);
-//    }
-//
-//    @Override
-//    public User selectUserProfile(int userNum) {
-//        return userMapper.selectUserProfile(userNum);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public int updatePassword(User user) {
-//        return userMapper.updatePassword(user);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public int updateLastLogin(User user) {
-//        return userMapper.updateLastLogin(user);
-//    }
-//
-//    @Override
-//    public List<User> selectAllUsers() {
-//        return userMapper.selectAllUsers();
-//    }
-//
-//    @Override
-//    @Transactional
-//    public int updateStatus(Map<String, Object> map) {
-//        return userMapper.updateStatus(map);
-//    }
 }

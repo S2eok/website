@@ -18,13 +18,15 @@ import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/user")
 public class UserController extends HttpServlet {
-	private UserService service = new UserServiceImpl();
+	private static final long serialVersionUID = 1L;
+	
+	private UserService service = UserServiceImpl.getInstance();
 
 	// 서버에 요청
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-//     System.out.println("user Action execute");
+    //System.out.println("user Action execute");
 		String act = request.getParameter("act");
 
 		switch (act) {
@@ -34,6 +36,10 @@ public class UserController extends HttpServlet {
 
 		case "signup":
 			showSingupForm(request, response);
+			break;
+
+		case "logout":
+			logout(request, response);
 			break;
 
 		default:
@@ -68,25 +74,15 @@ public class UserController extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/views/user/signup.jsp").forward(request, response);
 	}
 
+	private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	      request.getSession().invalidate();
+	      response.sendRedirect(request.getContextPath() + "/");
+
+	}
+
 	// ======= POST =======
 	private void doLogin(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		String id = request.getParameter("userId");
-		String password = request.getParameter("password");
-
-		User user = service.login(id, password);
-
-		if (user != null) {
-			request.getSession().setAttribute("loginUser", user);
-			request.getRequestDispatcher("/index.jsp").forward(request, response);
-		} else {
-			request.setAttribute("error", "계정 정보를 찾을 수 없습니다.");
-			request.getRequestDispatcher("/WEB-INF/views/user/login.jsp").forward(request, response);
-		}
-	}
-
-	private void doSignup(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
 		String id = request.getParameter("userId");
 		String password = request.getParameter("password");
 

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BoardMapper">
+
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard" parameterType="com.seok.dto.Board">
+		INSERT INTO boards (
+		title, content, writer_num, category
+		)
+		VALUES (
+		#{title}, #{content},
+		#{writerNum}, #{category})
+	</insert>
+
+	<!-- 게시글 수정 -->
+	<update id="updateBoard" parameterType="com.seok.dto.Board">
+		UPDATE boards
+		SET title = #{title}
+		, content = #{content}
+		, category = #{category}
+		WHERE board_id = #{boardId}
+		AND writer_num = #{writerNum}
+		AND deleted_at IS NULL;
+	</update>
+
+	<!-- 게시글 삭제 (DB 삭제 아님) -->
+	<update id="deleteBoard" parameterType="map">
+		UPDATE boards
+		SET
+		deleted_at = NOW()
+		WHERE board_id = #{boardId}
+		AND writer_num =
+		#{writerNum}
+		AND deleted_at IS NULL;
+	</update>
+
+	<!-- 게시글 하나 조회 -->
+	<select id="selectBoardById" parameterType="int"
+		resultType="com.seok.dto.Board">
+		SELECT *
+		FROM boards
+		WHERE board_id = #{boardId}
+		AND
+		deleted_at IS
+		NULL;
+	</select>
+
+	<!-- 게시글 목록 조회 -->
+	<select id="selectAllBoards" parameterType="map"
+		resultType="com.seok.dto.Board"
+	>
+		SELECT *
+		FROM boards
+		WHERE deleted_at IS NULL
+		<if test="category != null and category != ''">
+			AND category = #{category}
+		</if>
+		<choose>
+			<when test="sort == 'views'">
+				ORDER BY pinned DESC, views DESC
+			</when>
+			<when test="sort == 'like'">
+				ORDER BY pinned DESC, like_count DESC
+			</when>
+			<otherwise>
+				ORDER BY pinned DESC, created_at DESC
+			</otherwise>
+		</choose>
+		<if test="start != null and limit != null">
+			LIMIT #{start}, #{limit}
+		</if>
+	</select>
+
+	<!-- 게시글 검색 -->
+	<select id="searchBoards" parameterType="map"
+		resultType="com.seok.dto.Board">
+		SELECT *
+		FROM boards
+		WHERE deleted_at IS NULL
+		<if test="keyword != null and keyword != ''">
+			AND (
+			title LIKE CONCAT('%', #{keyword}, '%')
+			OR content
+			LIKE CONCAT('%', #{keyword}, '%')
+			OR writer_num IN (
+			SELECT user_num
+			FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+			)
+			)
+		</if>
+		<if test="category != null and category != ''">
+			AND category = #{category}
+		</if>
+		ORDER BY pinned DESC, created_at DESC;
+	</select>
+
+	<!-- 핀 상태 변경 (관리자용) -->
+	<update id="updatePinnedStatus" parameterType="map">
+		UPDATE boards
+		SET
+		pinned = #{pinned}
+		WHERE board_id = #{boardId};
+	</update>
+
+	<!-- 조회수 증가 -->
+	<update id="increaseViews" parameterType="int">
+		UPDATE boards
+		SET views = views + 1
+		WHERE board_id = #{boardId}
+		AND deleted_at IS NULL;
+	</update>
+
+	<!-- 게시글 수 카운트 (페이징용) -->
+	<select id="countBoards" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		  FROM boards
+		 WHERE deleted_at IS NULL
+		<if test="category != null and category != ''">
+			AND category = #{category}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND (
+				title LIKE CONCAT('%', #{keyword}, '%')
+			OR content LIKE CONCAT('%', #{keyword}, '%')
+			OR writer_num IN (
+			SELECT user_num
+			FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+			)
+			)
+		</if>
+	</select>
+
+</mapper>
