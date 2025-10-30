@@ -8,7 +8,8 @@
 	<!-- 로그인 -->
 	<select id="login" parameterType="com.seok.dto.User"
 		resultType="com.seok.dto.User">
-		SELECT *
+		SELECT user_id
+			 , user_password
 		  FROM users
 		 WHERE user_id   = #{userId}
 		   AND password  = #{password}

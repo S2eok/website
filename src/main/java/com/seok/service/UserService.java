@@ -52,7 +52,7 @@ public interface UserService {
      * 전체 회원 조회 (관리자용) 
      * @return 모든 회원 목록
      */
-    List<User> selectAllUsers();
+    List<User> selectAllUsers(User user);
 
     /** 
      * 회원 상태 변경 (관리자용) 

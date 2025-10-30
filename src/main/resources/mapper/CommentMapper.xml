@@ -17,7 +17,7 @@
 			<otherwise>NULL</otherwise>
 		</choose>
 		, #{content}
-		);
+		)
 	</insert>
 
 	<!-- 댓글/대댓글 수정 -->
@@ -50,7 +50,7 @@
 		 ORDER BY CASE WHEN parent_id IS NULL THEN comment_id
 		  		  	   ELSE parent_id
 				   	    END,
-   				  created_at ASC;
+   				  created_at ASC
 	</select>
 
 	<!-- 댓글 수 반영 -->
@@ -60,7 +60,7 @@
 				  		          FROM comments
 							     WHERE board_id = #{boardId}
 							   	   AND deleted_at IS NULL)
-		 WHERE board_id      = #{boardId};
+		 WHERE board_id      = #{boardId}
 	</update>
 	
 </mapper>
