@@ -7,6 +7,7 @@ public class Board {
 	private String        title;
 	private String        content;
 	private int           writerNum;   // FK → users.user_num
+    private String 	      writerName;  // JOIN 으로 가져올 작성자 이름
 	private int           views;
 	private String        category;
 	private boolean       pinned;
@@ -19,13 +20,14 @@ public class Board {
 
 	public Board() {}
 
-	public Board(int boardId, String title, String content, int writerNum, int views, String category, boolean pinned,
+	public Board(int boardId, String title, String content, int writerNum, String writerName, int views, String category, boolean pinned,
 			int likeCount, int commentCount, int reportCount, LocalDateTime createdAt, LocalDateTime updatedAt,
 			LocalDateTime deletedAt) {
 		this.boardId      = boardId;
 		this.title        = title;
 		this.content      = content;
 		this.writerNum    = writerNum;
+		this.writerName   = writerName;
 		this.views        = views;
 		this.category     = category;
 		this.pinned       = pinned;
@@ -68,6 +70,14 @@ public class Board {
 	public void setWriterNum(int writerNum) {
 		this.writerNum = writerNum;
 	}
+	
+    public String getWriterName() {
+        return writerName;
+    }
+
+    public void setWriterName(String writerName) {
+        this.writerName = writerName;
+    }
 
 	public int getViews() {
 		return views;
@@ -144,7 +154,7 @@ public class Board {
 	@Override
 	public String toString() {
 		return "Board [boardId=" + boardId + ", title=" + title + ", content=" + content + ", writerNum=" + writerNum
-				+ ", views=" + views + ", category=" + category + ", pinned=" + pinned + ", likeCount=" + likeCount
+				+ ", writerName=" + writerName + ", views=" + views + ", category=" + category + ", pinned=" + pinned + ", likeCount=" + likeCount
 				+ ", commentCount=" + commentCount + ", reportCount=" + reportCount + ", createdAt=" + createdAt
 				+ ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + "]";
 	}

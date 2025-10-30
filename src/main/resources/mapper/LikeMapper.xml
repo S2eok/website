@@ -18,7 +18,7 @@
 	</insert>
 	
 	<!-- 좋아요 취소 -->
-	<delete id = "delectLike" parameterType="com.seok.dto.Like">
+	<delete id = "deleteLike" parameterType="com.seok.dto.Like">
 		  DELETE FROM likes
 		  WHERE target_type = #{targetType}
 		    AND target_id   = #{targetId}
@@ -42,7 +42,7 @@
 		  				      FROM likes
 							 WHERE target_type = 'BOARD'
 		  					   AND target_id   = #{boardId})
-		 WHERE board_id = #{boardId};
+		 WHERE board_id = #{boardId}
 	</update>
 	
 	<!-- 댓글 좋아요 반영 -->
@@ -52,6 +52,6 @@
 		  					   FROM likes
 							  WHERE target_type = 'COMMENT'
 		  					    AND target_id   = #{commentId})
-		 WHERE comment_id = #{commentId};
+		 WHERE comment_id = #{commentId}
 	</update>
 </mapper>

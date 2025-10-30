@@ -10,11 +10,13 @@
 <body>
 	<%@ include file="/WEB-INF/views/include/header.jsp"%>
 	<h2>게시글 작성</h2>
-	<form method="post" action="${pageContext.request.contextPath}/user?act=write" id="write-form">
+	<form method="post" action="${pageContext.request.contextPath}/board?act=write" id="write-form">
+		<input type="hidden" name="writerNum" value="${loginUser.userNum}">
+		<input type="text" name="category" placeholder="카테고리">
 		<label for="boardtitle">내용</label>
-		<input type="text" id="boardtitle" placeholder="제목을 작성해주세요">
+		<input type="text"  name = "title" id="boardtitle" placeholder="제목을 작성해주세요">
 		<label for="boardcontent">내용</label>
-		<textarea id="boardcontent" placeholder="내용을 작성해주세요"></textarea>
+		<textarea  name = "content" id="boardcontent" placeholder="내용을 작성해주세요"></textarea>
 		<input type="submit" value="작성하기">
 	</form>
 	<%@ include file="/WEB-INF/views/include/footer.jsp"%>

@@ -1,11 +1,15 @@
 package com.seok.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.seok.dto.Board;
+import com.seok.dto.Like;
 import com.seok.dto.User;
 import com.seok.service.BoardService;
 import com.seok.service.BoardServiceImpl;
+import com.seok.service.LikeService;
+import com.seok.service.LikeServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -33,6 +37,9 @@ public class BoardController extends HttpServlet {
 		case "write":
 			showWriteForm(request, response);
 			break;
+		case "detail":
+			showDetailForm(request, response);
+			break;
 
 		default:
 			break;
@@ -56,14 +63,71 @@ public class BoardController extends HttpServlet {
 	}
 
 	// ======= GET =======
+	
+	//게시글 목록 불러오기
 	private void showListForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		// 1. 서비스 객체 가져오기
+		BoardService service = BoardServiceImpl.getInstance();
+		
+		// 2. 게시글 목록 조회
+		List<Board> boardlist = service.selectAllBoards();
+		
+		// 3. JSP 에서 쓸 수 있게 requset에 담기
+		request.setAttribute("boardList", boardlist);
+		
+		// 4. 목록 페이지로 forward
 		request.getRequestDispatcher("/WEB-INF/views/board/list.jsp").forward(request, response);
 	}
 	
 	private void showWriteForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.getRequestDispatcher("/WEB-INF/views/board/write.jsp").forward(request, response);
+	}
+	
+	//게시글 상세 조회
+	private void showDetailForm(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		int boardId  =  Integer.parseInt(request.getParameter("boardId"));
+		// 1. 서비스 객체 가져오기
+		BoardService service = BoardServiceImpl.getInstance();
+		
+		// 2. 기능
+		
+		// 2-1. 조회수
+	    // 로그인한 사용자 가져오기
+	    User loginUser = (User) request.getSession().getAttribute("loginUser");
+	    String viewKey = "viewed_" + boardId;
+
+	    // 세션에 해당 게시글 조회 기록이 없을 때만 조회수 증가
+	    if (loginUser != null && request.getSession().getAttribute(viewKey) == null) {
+	        service.increaseViews(boardId);
+	        request.getSession().setAttribute(viewKey, true);
+	    }
+	    
+	    // 2-2 게시글 좋아요
+	    
+	    LikeService likeService = LikeServiceImpl.getInstance();
+	    
+	    if(loginUser != null) {
+	    	Like like = new Like();
+	    	like.setTargetType("BOARD");
+	    	like.setTargetId(boardId);
+	    	like.setUserNum(loginUser.getUserNum());
+	    	
+	    	boolean userLiked = likeService.checkUserLike(like);
+	    	request.setAttribute("userLiked", userLiked);
+	    }
+	    
+	    
+		// 2-3. 해당 게시글 1개 조회
+		Board board = service.selectBoardById(boardId);
+
+		// 3. JSP로 전달
+		request.setAttribute("board", board);
+		request.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(request, response);
 	}
 
 
@@ -81,7 +145,7 @@ public class BoardController extends HttpServlet {
 		
 		User loginUser = (User) request.getSession().getAttribute("loginUser");
 		if(loginUser == null) {
-			response.sendRedirect(request.getContextPath() + "/user/login.jsp");
+			response.sendRedirect(request.getContextPath() + "/user?act=login");
 			return;
 		}
 		int writerNum = loginUser.getUserNum();
@@ -97,7 +161,7 @@ public class BoardController extends HttpServlet {
 		
 	    if (result > 0) {
 	        // 성공 시 목록 페이지로
-	        response.sendRedirect(request.getContextPath() + "/board/list");
+	        response.sendRedirect(request.getContextPath() + "/board?act=list");
 	    } else {
 	        // 실패 시 에러 메시지 전달
 	        request.setAttribute("error", "게시글 등록 실패");

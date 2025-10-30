@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="BoardMapper">
+<mapper namespace="com.seok.mapper.BoardMapper">
 
 	<!-- 게시글 등록 -->
 	<insert id="insertBoard" parameterType="com.seok.dto.Board">
@@ -18,10 +18,12 @@
 	<!-- 게시글 수정 -->
 	<update id="updateBoard" parameterType="com.seok.dto.Board">
 		UPDATE boards
-		SET title = #{title}
+		SET title =
+		#{title}
 		, content = #{content}
 		, category = #{category}
-		WHERE board_id = #{boardId}
+		WHERE board_id =
+		#{boardId}
 		AND writer_num = #{writerNum}
 		AND deleted_at IS NULL;
 	</update>
@@ -40,20 +42,43 @@
 	<!-- 게시글 하나 조회 -->
 	<select id="selectBoardById" parameterType="int"
 		resultType="com.seok.dto.Board">
-		SELECT *
-		FROM boards
+		SELECT
+		b.board_id,
+		b.title,
+		b.content,
+		b.writer_num,
+		u.name AS writer_name, 
+		b.views,
+		b.category,
+		b.like_count,
+		b.comment_count,
+		b.report_count,
+		b.created_at,
+		b.updated_at
+		FROM boards b
+		JOIN users u ON b.writer_num = u.user_num
 		WHERE board_id = #{boardId}
 		AND
-		deleted_at IS
-		NULL;
+		deleted_at IS NULL;
 	</select>
 
 	<!-- 게시글 목록 조회 -->
-	<select id="selectAllBoards" parameterType="map"
-		resultType="com.seok.dto.Board"
-	>
-		SELECT *
-		FROM boards
+	<select id="selectAllBoards" resultType="com.seok.dto.Board">
+		SELECT
+		b.board_id,
+		b.title,
+		b.content,
+		b.writer_num,
+		u.name AS writer_name, 
+		b.views,
+		b.category,
+		b.like_count,
+		b.comment_count,
+		b.report_count,
+		b.created_at,
+		b.updated_at
+		FROM boards b
+		JOIN users u ON b.writer_num = u.user_num
 		WHERE deleted_at IS NULL
 		<if test="category != null and category != ''">
 			AND category = #{category}
@@ -108,7 +133,8 @@
 	<!-- 조회수 증가 -->
 	<update id="increaseViews" parameterType="int">
 		UPDATE boards
-		SET views = views + 1
+		SET views
+		= views + 1
 		WHERE board_id = #{boardId}
 		AND deleted_at IS NULL;
 	</update>
@@ -116,18 +142,20 @@
 	<!-- 게시글 수 카운트 (페이징용) -->
 	<select id="countBoards" parameterType="map" resultType="int">
 		SELECT COUNT(*)
-		  FROM boards
-		 WHERE deleted_at IS NULL
+		FROM boards
+		WHERE deleted_at IS NULL
 		<if test="category != null and category != ''">
 			AND category = #{category}
 		</if>
 		<if test="keyword != null and keyword != ''">
 			AND (
-				title LIKE CONCAT('%', #{keyword}, '%')
-			OR content LIKE CONCAT('%', #{keyword}, '%')
+			title LIKE CONCAT('%', #{keyword}, '%')
+			OR content LIKE CONCAT('%',
+			#{keyword}, '%')
 			OR writer_num IN (
 			SELECT user_num
-			FROM users WHERE name LIKE CONCAT('%', #{keyword}, '%')
+			FROM users WHERE
+			name LIKE CONCAT('%', #{keyword}, '%')
 			)
 			)
 		</if>

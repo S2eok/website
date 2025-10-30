@@ -24,12 +24,14 @@
 		<%-- 게시글 등록되어있다면 출력하기, 반복문 사용할 예정 --%>
 		<%-- c:forEach == for문임, board라는 list객체를 반복의 대상으로 지정, board라는 이름으로 list 안의 각 원소를 board 변수로 접근 가능 --%>
 		<tbody>
-			<c:forEach items="${board}" var="board" varStatus="vs">
+			<c:forEach items="${boardList}" var="board" varStatus="vs">
 				<tr>
-					<td>${board.id}</td>
-					<td>${board.title}</td>
-					<td>${board.writerNum}</td>
-					<td>${board.createdAt}</td>
+					<td>${vs.index + 1}</td> <!-- 화면용 번호 -->
+					<td>
+					<a href="${pageContext.request.contextPath}/board?act=detail&boardId=${board.boardId}">
+					${board.title}</td>
+					<td>${board.writerName}</td>
+					<td>${board.createdAt.toLocalDate()}</td>
 					<td>${board.views}</td>
 				</tr>
 			</c:forEach>

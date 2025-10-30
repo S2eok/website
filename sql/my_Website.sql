@@ -64,6 +64,7 @@ FOREIGN KEY (board_id) REFERENCES boards(board_id)
 
 CREATE TABLE likes(
 like_id INT AUTO_INCREMENT PRIMARY KEY,
+
 target_type VARCHAR(20) NOT NULL, # ENUM('BOARD', 'COMMENT') NOT NULL 도 가능하곘으나, 확장을 위해 안씀.
 target_id INT NOT NULL,
 user_num INT NOT NULL,
