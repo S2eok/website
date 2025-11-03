@@ -29,7 +29,7 @@
 					<td>${vs.index + 1}</td> <!-- 화면용 번호 -->
 					<td>
 					<a href="${pageContext.request.contextPath}/board?act=detail&boardId=${board.boardId}">
-					${board.title}</td>
+					${board.title}</td></a>
 					<td>${board.writerName}</td>
 					<td>${board.createdAt.toLocalDate()}</td>
 					<td>${board.views}</td>

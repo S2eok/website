@@ -21,9 +21,5 @@ public interface LikeMapper {
 	
 	/** 댓글 좋아요 반영 */
 	int updateCommentLikeCount(@Param("commentId") int commentId);
-	
-	/** 좋아요 토글 (좋아요/취소 자동 판단) */
-    boolean toggleLike(Like like);
-
 
 }

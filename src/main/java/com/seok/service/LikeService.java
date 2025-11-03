@@ -19,6 +19,4 @@ public interface LikeService {
 		/** 댓글 좋아요 반영 */
 		int updateCommentLikeCount(int commentId);
 		
-		/** 좋아요 토글 (좋아요/취소 자동 판단) */
-	    boolean toggleLike(Like like);
 }

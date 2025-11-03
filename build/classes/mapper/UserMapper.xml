@@ -8,8 +8,16 @@
 	<!-- 로그인 -->
 	<select id="login" parameterType="com.seok.dto.User"
 		resultType="com.seok.dto.User">
-		SELECT user_id
-			 , user_password
+		SELECT user_num      AS userNum
+		     , user_id       AS userId
+		     , password      
+		     , name      
+		     , email
+		     , role
+		     , status
+		     , profile_img   AS profileImg
+		     , created_at    AS createdAt
+		     , last_login_at AS lastLoginAt
 		  FROM users
 		 WHERE user_id   = #{userId}
 		   AND password  = #{password}

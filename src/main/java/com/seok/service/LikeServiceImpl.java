@@ -47,7 +47,7 @@ public class LikeServiceImpl implements LikeService {
              return result;
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("좋아요 하려다 오류난 듯");
+            System.out.println("좋아요 취소하려다 오류난 듯");
             return 0;
         }
 	}
@@ -73,28 +73,5 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	public int updateCommentLikeCount(int commentId) {
 		return 0;
-	}
-
-	// 토글 (내부적으로 위 두 개를 이용)
-	@Override
-	public boolean toggleLike(Like like) {
-        try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
-        	LikeMapper mapper = session.getMapper(LikeMapper.class); // 여기서 mapper 객체 꺼내기 
-        	int count = mapper.checkUserLike(like);
-        	boolean liked;
-        	if(count > 0) {
-        		mapper.deleteLike(like);
-        		liked = false; 
-        	} else {
-        		mapper.insertLike(like);
-        		liked = true; 
-        	}
-        	session.commit(); // INSERT니까 반드시 commit 필요
-            return liked;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("좋아요 버튼 누르려다 오류난 듯");
-            return false;
-        }
 	}
 }

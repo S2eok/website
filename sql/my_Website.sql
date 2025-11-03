@@ -1,7 +1,7 @@
 CREATE DATABASE my_Website;
 USE my_Website;
 
-CREATE TABLE users (
+CREATE TABLE if not exists users (
 user_num INT AUTO_INCREMENT PRIMARY KEY,
 user_id VARCHAR(20) UNIQUE KEY,
 password VARCHAR(100) NOT NULL,
@@ -15,7 +15,7 @@ report_count INT DEFAULT 0,
 last_login_at TIMESTAMP
 );
 
-CREATE TABLE boards (
+CREATE TABLE if not exists boards (
 board_id INT AUTO_INCREMENT PRIMARY KEY,
 title VARCHAR(100) NOT NULL,
 content TEXT NOT NULL,
@@ -32,7 +32,7 @@ deleted_at TIMESTAMP NULL,
 FOREIGN KEY (writer_num) REFERENCES users(user_num)
 );
 
-CREATE TABLE comments (
+CREATE TABLE if not exists comments (
 comment_id INT AUTO_INCREMENT PRIMARY KEY,
 board_id INT, 
 writer_num INT NOT NULL,
@@ -48,7 +48,7 @@ FOREIGN KEY (writer_num) REFERENCES users(user_num),
 FOREIGN KEY (parent_id) REFERENCES comments(comment_id)
 );
 
-CREATE TABLE files(
+CREATE TABLE if not exists files(
 file_id INT AUTO_INCREMENT PRIMARY KEY,
 board_id INT NOT NULL,
 original_name VARCHAR(200) NOT NULL,
@@ -62,9 +62,8 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (board_id) REFERENCES boards(board_id)
 ); 
 
-CREATE TABLE likes(
+CREATE TABLE if not exists likes(
 like_id INT AUTO_INCREMENT PRIMARY KEY,
-
 target_type VARCHAR(20) NOT NULL, # ENUM('BOARD', 'COMMENT') NOT NULL 도 가능하곘으나, 확장을 위해 안씀.
 target_id INT NOT NULL,
 user_num INT NOT NULL,
@@ -73,7 +72,7 @@ FOREIGN KEY (user_num) REFERENCES users(user_num),
 UNIQUE (target_type, target_id, user_num)
 );
 
-CREATE TABLE reports(
+CREATE TABLE if not exists reports(
 report_id INT AUTO_INCREMENT PRIMARY KEY,
 target_type  VARCHAR(20) NOT NULL,
 target_id INT NOT NULL,

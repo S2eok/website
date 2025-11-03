@@ -107,21 +107,6 @@ public class BoardController extends HttpServlet {
 	        request.getSession().setAttribute(viewKey, true);
 	    }
 	    
-	    // 2-2 게시글 좋아요
-	    
-	    LikeService likeService = LikeServiceImpl.getInstance();
-	    
-	    if(loginUser != null) {
-	    	Like like = new Like();
-	    	like.setTargetType("BOARD");
-	    	like.setTargetId(boardId);
-	    	like.setUserNum(loginUser.getUserNum());
-	    	
-	    	boolean userLiked = likeService.checkUserLike(like);
-	    	request.setAttribute("userLiked", userLiked);
-	    }
-	    
-	    
 		// 2-3. 해당 게시글 1개 조회
 		Board board = service.selectBoardById(boardId);
 
