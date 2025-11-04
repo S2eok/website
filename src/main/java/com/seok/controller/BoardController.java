@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.seok.dto.Board;
-import com.seok.dto.Like;
 import com.seok.dto.User;
 import com.seok.service.BoardService;
 import com.seok.service.BoardServiceImpl;
-import com.seok.service.LikeService;
-import com.seok.service.LikeServiceImpl;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

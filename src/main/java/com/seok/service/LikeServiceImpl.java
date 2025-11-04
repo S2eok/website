@@ -21,12 +21,6 @@ public class LikeServiceImpl implements LikeService {
 	public int insertLike(Like like) {
         try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
         	LikeMapper mapper = session.getMapper(LikeMapper.class); // 여기서 mapper 객체 꺼내기
-        	// 근데 이거 유료친구가 알려준거라 실무자 눈에는 괴상할수도....
-        	// 기능 없애.... 화면에서 확인 하고 여긴 실행만?
-        	// 화면에서 누르면, 안눌린 상태면 누르는거 작동 아니면 취소시키기
-        	// 여기서 확인할 필요가 읎다
-        	// 라고 차님이 하심
-        	// 스프링 부트 배우고 싶으면 싸피보다 김영한 쌤 인프런 강의를 들어봐라
         	 int result = mapper.insertLike(like);
         	 if(result > 0) session.commit();
              return result;
@@ -54,6 +48,7 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	public boolean checkUserLike(Like like) {
+		System.out.println("[DEBUG] LikeServiceImpl.checkUserLike() 호출됨");
         try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
         	LikeMapper mapper = session.getMapper(LikeMapper.class); // 여기서 mapper 객체 꺼내기
         	 int count = mapper.checkUserLike(like);

@@ -1,64 +1,111 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%-- jstl의 core 라이브러리를 사용하기 위해 taglib를 이용한다. --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 <html>
 
 <head>
-<meta charset="UTF-8">
-<title>${board.title}</title>
+    <meta charset="UTF-8">
+    <title>${board.title}</title>
 </head>
 
 <body>
-	<%@ include file="/WEB-INF/views/include/header.jsp"%>
-	<h2>게시글 내용</h2>
-	<p>작성자 ${board.writerName}</p>
-	<p>작성일 ${board.createdAt.toLocalDate()}</p>
-	<p>조회수 ${board.views}</p>
-	<p>좋아요 수 ${board.likeCount}</p>
-	<p>구분 ${board.category}</p>
-	<p>제목 ${board.title}</p>
-	<p>내용 ${board.content}</p>
+    <%@ include file="/WEB-INF/views/include/header.jsp"%>
 
-	<button id="like-btn" data-type="BOARD" data-id="${board.boardId}">
-		${userLiked ? "♥" : "♡"}</button>
+    <h2>게시글 내용</h2>
+    <p>작성자 ${board.writerName}</p>
+    <p>작성일 ${board.createdAt.toLocalDate()}</p>
+    <p>조회수 ${board.views}</p>
+    <p>좋아요 수 ${board.likeCount}</p>
+    <p>구분 ${board.category}</p>
+    <p>제목 ${board.title}</p>
+    <p>내용 ${board.content}</p>
 
-	<a href="${pageContext.request.contextPath}/board?act=list">목록으로</a>
-	<%@ include file="/WEB-INF/views/include/footer.jsp"%>
+    <!-- 좋아요 버튼 -->
+    <button id="like-btn" data-type="BOARD" data-id="${board.boardId}">
+        ${isLiked ? "♥" : "♡"}</button>
 
-	<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const likeBtn = document.getElementById("like-btn");
-  const targetType = likeBtn.dataset.type; // "BOARD"
-  const targetId = likeBtn.dataset.id;     // 게시글 ID
-  let liked = ${userLiked};
-
-  likeBtn.addEventListener("click", async () => {
-    // URL 수정
-    const url = `${pageContext.request.contextPath}/like?act=${liked ? "delete" : "insert"}`;
-
-    // JSON 말고 Form 방식으로 전송
-    const params = new URLSearchParams();
-    params.append("targetType", targetType);
-    params.append("targetId", targetId);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params
-    });
-
-    // ✅ ③ 응답 처리
-    const data = await response.json();
-    if (data.success) {
-      liked = !liked;
-      likeBtn.textContent = liked ? "♥" : "♡";
-    }
-  });
-});
-</script>
-
+    <a href="${pageContext.request.contextPath}/board?act=list">목록으로</a>
+    <%@ include file="/WEB-INF/views/include/footer.jsp"%>
+    <script>
+        const contextPath = "${pageContext.request.contextPath}";
+    </script>
 </body>
+
+<script>
+    window.addEventListener("DOMContentLoaded", async () => {
+        const likeBtn = document.getElementById("like-btn");
+        if (!likeBtn) return;
+
+        const targetType = likeBtn.dataset.type || "BOARD";
+        const targetId = likeBtn.dataset.id;
+
+        // 1. 초기 상태 확인 (GET /like?act=check)
+        const checkUrl = contextPath + "/like?act=check&" + new URLSearchParams({
+            targetType,
+            targetId
+        }).toString();
+
+        try {
+            const checkRes = await fetch(checkUrl, {
+                method: "GET",
+                credentials: "include"
+            });
+            // 401 / 400 등일 수 있으니 텍스트로 받아보고 JSON 파싱 시도
+            const raw = await checkRes.text();
+            let checkData = {};
+            try {
+                checkData = JSON.parse(raw);
+            } catch (_) {
+                checkData = {};
+            }
+            likeBtn.innerText = checkData.isLiked ? "♥" : "♡";
+        } catch (e) {
+            // 실패해도 기본 표시 유지
+            console.error("초기 좋아요 상태 확인 실패:", e);
+        }
+
+        // 2) 클릭 시 insert/delete (POST /like?act=insert|delete)
+        likeBtn.addEventListener("click", async () => {
+            const isLiked = likeBtn.innerText === "♥";
+            const action = isLiked ? "delete" : "insert";
+
+            // UI 선반영
+            likeBtn.innerText = isLiked ? "♡" : "♥";
+
+            try {
+                const res = await fetch(contextPath + "/like?act=" + action, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        targetType,
+                        targetId
+                    }).toString()
+                });
+
+                const raw = await res.text();
+                let data = {};
+                try {
+                    data = JSON.parse(raw);
+                } catch (_) {
+                    data = {};
+                }
+
+                if (!data.success) {
+                    // 서버 실패 시 롤백
+                    likeBtn.innerText = isLiked ? "♥" : "♡";
+                    if (res.status === 401) alert("로그인이 필요합니다.");
+                }
+            } catch (e) {
+                console.error("좋아요 요청 중 오류:", e);
+                // 네트워크 오류 시 롤백
+                likeBtn.innerText = isLiked ? "♥" : "♡";
+            }
+        });
+    });
+</script>
 
 </html>
