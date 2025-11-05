@@ -5,107 +5,94 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>${board.title}</title>
+<meta charset="UTF-8">
+<title>${board.title}</title>
 </head>
 
 <body>
-    <%@ include file="/WEB-INF/views/include/header.jsp"%>
+	<%@ include file="/WEB-INF/views/include/header.jsp"%>
 
-    <h2>게시글 내용</h2>
-    <p>작성자 ${board.writerName}</p>
-    <p>작성일 ${board.createdAt.toLocalDate()}</p>
-    <p>조회수 ${board.views}</p>
-    <p>좋아요 수 ${board.likeCount}</p>
-    <p>구분 ${board.category}</p>
-    <p>제목 ${board.title}</p>
-    <p>내용 ${board.content}</p>
+	<h2>게시글 내용</h2>
+	<p>작성자 ${board.writerName}</p>
+	<p>작성일 ${board.createdAt.toLocalDate()}</p>
+	<p>조회수 ${board.views}</p>
+	<p>좋아요 수 ${board.likeCount}</p>
+	<p>구분 ${board.category}</p>
+	<p>제목 ${board.title}</p>
+	<p>내용 ${board.content}</p>
 
-    <!-- 좋아요 버튼 -->
-    <button id="like-btn" data-type="BOARD" data-id="${board.boardId}">
-        ${isLiked ? "♥" : "♡"}</button>
+	<!-- 좋아요 버튼 -->
+	<button id="like-btn" data-type="BOARD" data-id="${board.boardId}">
+		${isLiked ? "♥" : "♡"}</button>
+		
+	<!-- 신고 버튼 -->
+	<button id="report-btn" data-type="BOARD" data-id="${board.boardId}">신고</button>
+	 
+	    <div id="modalWrap"> 
+        <span id="closeBtn">&times;</span>
+        <select name = "report-category" id="report-category">
+          <option value="javascript">JavaScript</option>
+    <option value="java">광고</option>
+    <option value="python">도배</option>
+    <option value="golang">음란물</option>
+    <option value="php">욕설</option>
+    <option value="c#">개인정보침해</option>
+    <option value="C++">저작권침해</option>
+    <option value="erlang">기타</option></select>>
+        <label name = "report-content">내용</label>
+        <textarea type="text" placeholder="신고하실 사항을 적어주세요."></textarea>
+        <button className="cancle" type="button">
+          취소
+        </button>
+        <button className="add-report" type="button">
+          신고하기
+        </button>
+      </div>
 
-    <a href="${pageContext.request.contextPath}/board?act=list">목록으로</a>
-    <%@ include file="/WEB-INF/views/include/footer.jsp"%>
-    <script>
-        const contextPath = "${pageContext.request.contextPath}";
-    </script>
+	<a href="${pageContext.request.contextPath}/board?act=list">목록으로</a>
+	<%@ include file="/WEB-INF/views/include/footer.jsp"%>
 </body>
 
 <script>
-    window.addEventListener("DOMContentLoaded", async () => {
-        const likeBtn = document.getElementById("like-btn");
-        if (!likeBtn) return;
+async function checklike(targetType, targetId) {
+	 const checkUrl = "${pageContext.request.contextPath}/like?act=check&" 
+			        + new URLSearchParams({ targetType, targetId }).toString();
 
-        const targetType = likeBtn.dataset.type || "BOARD";
-        const targetId = likeBtn.dataset.id;
+     const checkRes = await fetch(checkUrl, {
+    	  method: "GET", });
+      
+     const raw = await checkRes.text();
+     return JSON.parse(raw);
+}
 
-        // 1. 초기 상태 확인 (GET /like?act=check)
-        const checkUrl = contextPath + "/like?act=check&" + new URLSearchParams({
-            targetType,
-            targetId
-        }).toString();
+async function toggleLike(targetType, targetId, currentText) {
+	 const action = currentText === "♥" ? "delete" : "insert";
+	 const likeUrl = "${pageContext.request.contextPath}/like?act=" + action
+     const res = await fetch(likeUrl, {
+	             method: "POST",
+                 body:   new URLSearchParams({ targetType, targetId })
+	             });
 
-        try {
-            const checkRes = await fetch(checkUrl, {
-                method: "GET",
-                credentials: "include"
-            });
-            // 401 / 400 등일 수 있으니 텍스트로 받아보고 JSON 파싱 시도
-            const raw = await checkRes.text();
-            let checkData = {};
-            try {
-                checkData = JSON.parse(raw);
-            } catch (_) {
-                checkData = {};
-            }
-            likeBtn.innerText = checkData.isLiked ? "♥" : "♡";
-        } catch (e) {
-            // 실패해도 기본 표시 유지
-            console.error("초기 좋아요 상태 확인 실패:", e);
-        }
+	        const raw = await res.text();
+	        const data = JSON.parse(raw);
+	        return currentText === "♥" ? "♡" : "♥";
+}
 
-        // 2) 클릭 시 insert/delete (POST /like?act=insert|delete)
-        likeBtn.addEventListener("click", async () => {
-            const isLiked = likeBtn.innerText === "♥";
-            const action = isLiked ? "delete" : "insert";
+window.addEventListener("DOMContentLoaded", async () => {
+    const likeBtn = document.getElementById("like-btn");
+    const targetType = likeBtn.dataset.type;
+    const targetId = likeBtn.dataset.id;
 
-            // UI 선반영
-            likeBtn.innerText = isLiked ? "♡" : "♥";
+    // 1. 초기 좋아요 상태 확인
+    const checkData = await checklike(targetType, targetId);
+    likeBtn.innerText = checkData.isLiked ? "♥" : "♡";
 
-            try {
-                const res = await fetch(contextPath + "/like?act=" + action, {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({
-                        targetType,
-                        targetId
-                    }).toString()
-                });
-
-                const raw = await res.text();
-                let data = {};
-                try {
-                    data = JSON.parse(raw);
-                } catch (_) {
-                    data = {};
-                }
-
-                if (!data.success) {
-                    // 서버 실패 시 롤백
-                    likeBtn.innerText = isLiked ? "♥" : "♡";
-                    if (res.status === 401) alert("로그인이 필요합니다.");
-                }
-            } catch (e) {
-                console.error("좋아요 요청 중 오류:", e);
-                // 네트워크 오류 시 롤백
-                likeBtn.innerText = isLiked ? "♥" : "♡";
-            }
-        });
+    // 2. 클릭 시 좋아요 토글
+    likeBtn.addEventListener("click", async () => {
+        const newText = await toggleLike(targetType, targetId, likeBtn.innerText);
+        likeBtn.innerText = newText;
     });
+});
 </script>
 
 </html>

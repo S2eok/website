@@ -48,7 +48,6 @@ public class LikeServiceImpl implements LikeService {
 
 	@Override
 	public boolean checkUserLike(Like like) {
-		System.out.println("[DEBUG] LikeServiceImpl.checkUserLike() 호출됨");
         try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
         	LikeMapper mapper = session.getMapper(LikeMapper.class); // 여기서 mapper 객체 꺼내기
         	 int count = mapper.checkUserLike(like);
