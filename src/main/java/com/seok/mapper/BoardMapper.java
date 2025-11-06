@@ -16,7 +16,7 @@ public interface BoardMapper {
 	int updateBoard(Board board);
 
 	/** 게시글 삭제 */
-	int deleteBoard(Map<String, Object> map);
+	int deleteBoard(@Param("boardId") int boardId);
 
 	/** 게시글 하나 조회 */
 	Board selectBoardById(@Param("boardId") int boardId);

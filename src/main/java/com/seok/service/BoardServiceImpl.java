@@ -36,14 +36,30 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public int updateBoard(Board board) {
-		// TODO Auto-generated method stub
-		return 0;
+        try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
+        	BoardMapper mapper = session.getMapper(BoardMapper.class); // 여기서 mapper 객체 꺼내기
+        	 int result = mapper.updateBoard(board);
+             session.commit();
+             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("게시글 수정하다 오류난 듯");
+            return 0;
+        }
 	}
 
 	@Override
-	public int deleteBoard(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int deleteBoard(int boardId) {
+        try (SqlSession session = MyBatisUtil.openSession()) { // 세션 열기
+        	BoardMapper mapper = session.getMapper(BoardMapper.class); // 여기서 mapper 객체 꺼내기
+        	 int result = mapper.deleteBoard(boardId);
+             session.commit();
+             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("게시글 삭제하다 오류난 듯");
+            return 0;
+        }
 	}
 
 	@Override

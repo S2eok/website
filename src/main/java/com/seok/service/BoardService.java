@@ -28,10 +28,10 @@ public interface BoardService {
 
     /** 
      * 게시글 삭제 
-     * @param map 게시글 ID 및 사용자 정보 등 삭제 조건
+     * @param boardId 게시글 ID 및 사용자 정보 등 삭제 조건
      * @return 처리된 행 수
      */
-    int deleteBoard(Map<String, Object> map);
+    int deleteBoard(int boardId);
 
     /** 
      * 게시글 하나 조회 

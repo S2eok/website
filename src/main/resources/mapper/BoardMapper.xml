@@ -18,18 +18,16 @@
 	<!-- 게시글 수정 -->
 	<update id="updateBoard" parameterType="com.seok.dto.Board">
 		UPDATE boards
-		SET title =
-		#{title}
-		, content = #{content}
-		, category = #{category}
-		WHERE board_id =
-		#{boardId}
-		AND writer_num = #{writerNum}
-		AND deleted_at IS NULL;
+		SET title    = #{title}
+		  , content  = #{content}
+		  , category = #{category}
+		WHERE board_id   = #{boardId}
+		  AND writer_num = #{writerNum}
+		  AND deleted_at IS NULL;
 	</update>
 
 	<!-- 게시글 삭제 (DB 삭제 아님) -->
-	<update id="deleteBoard" parameterType="map">
+	<update id="deleteBoard" parameterType="int">
 		UPDATE boards
 		SET
 		deleted_at = NOW()

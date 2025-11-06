@@ -12,8 +12,9 @@
 	<h2>게시글 작성</h2>
 	<form method="post" action="${pageContext.request.contextPath}/board?act=write" id="write-form">
 		<input type="hidden" name="writerNum" value="${loginUser.userNum}">
+		<label for="boardtitle">분류</label>
 		<input type="text" name="category" placeholder="카테고리">
-		<label for="boardtitle">내용</label>
+		<label for="boardtitle">제목</label>
 		<input type="text"  name = "title" id="boardtitle" placeholder="제목을 작성해주세요">
 		<label for="boardcontent">내용</label>
 		<textarea  name = "content" id="boardcontent" placeholder="내용을 작성해주세요"></textarea>
