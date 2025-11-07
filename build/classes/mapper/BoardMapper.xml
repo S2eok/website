@@ -30,10 +30,9 @@
 	<update id="deleteBoard" parameterType="int">
 		UPDATE boards
 		SET
-		deleted_at = NOW()
+		deleted_at     = NOW()
 		WHERE board_id = #{boardId}
-		AND writer_num =
-		#{writerNum}
+		AND writer_num = #{writerNum}
 		AND deleted_at IS NULL;
 	</update>
 
@@ -158,5 +157,4 @@
 			)
 		</if>
 	</select>
-
 </mapper>

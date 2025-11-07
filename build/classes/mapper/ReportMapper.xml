@@ -20,7 +20,7 @@
 	</insert>
 	
 	<!-- 신고 중복 확인 -->
-	<select id="checkUserRetort" parameterType="com.seok.dto.Report" resultType="int">
+	<select id="checkUserReport" parameterType="com.seok.dto.Report" resultType="int">
         SELECT COUNT(*)
           FROM reports
     	 WHERE target_type  = #{targetType}

@@ -87,7 +87,13 @@ INSERT INTO users (user_id, password, name, email, role, status)
 VALUES ('admin', 'admin', '관리자', 'admin@example.com', 'ADMIN', 'ACTIVE');
 
 INSERT INTO users (user_id, password, name, email, role, status)
-VALUES ('1234', '1234', '청명', 'cheongmyeong@example.com', 'USER', 'ACTIVE');
+VALUES ('1234', '1234', '청명', 'cheongmyeong@example.com', 'USER', 'ACTIVE')
+     , ('123', '123', '링크', 'link@example.com', 'USER', 'ACTIVE')
+     , ('12', '12', '젤다', 'zelda@example.com', 'USER', 'ACTIVE'); 
+
+UPDATE users
+SET status = "ACTIVE"
+WHERE user_num = 2;
 
 SELECT * 
 FROM users;
